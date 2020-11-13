@@ -134,7 +134,7 @@ pycno <- function(x,pops,celldim,r=0.2,converge=3,verbose=TRUE) {
 # Where pycgrid is a SpatialGridDataFrame created by pycno
 #       spdf is a SpatialPolygonsDataFrame giving the zones for which estimates
 #       are needed.
-#       result is a vector of poluation estimates
+#       result is a vector of population estimates
 #        
 #
 # ==============================================================================
