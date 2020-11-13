@@ -1,8 +1,8 @@
 Package: pycno
 Type: Package
 Title: Pycnophylactic Interpolation
-Version: 1.2.1
-Date: 2014-08-18
+Version: 1.2.2
+Date: 2020-11-13
 Author: Chris Brunsdon
 Maintainer: Chris Brunsdon <christopher.brunsdon@nuim.ie>
 Depends: stats, sp, maptools, rgeos
