@@ -1,2 +1,2 @@
 export(pycno,estimate.pycno)
-import(maptools,rgeos,sp)
+import(maptools,rgeos,sp,stats)
