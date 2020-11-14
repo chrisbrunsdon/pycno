@@ -84,6 +84,23 @@
   spdf <- SpatialPixelsDataFrame(coordinates(sg),data.frame(zone=res))
   return(as(spdf,"SpatialGridDataFrame"))}
 
+.poly2grid_sf <- function(x,celldim) {
+  if (! is(celldim,"RasterLayer")) {
+    bbx <- st_bbox(x)
+    offset <- bbx[1:2]
+    extent <- bbx[3:4] - offset
+    shape <- ceiling(extent / celldim)
+    sg <- raster(ncols=shape[1],nrows=shape[2],
+                 xmn=bbx[1],ymn=bbx[2],xmx=bbx[3],ymx=bbx[4],
+                 crs=st_crs(nc.sids2))
+  } else {
+    sg <- celldim
+  }
+  return(rasterize(x,sg))
+}
+
+
+
 .grid.matrix <- function(gr,index=1) {
   gr.dim <- slot(getGridTopology(gr),"cells.dim")
   res <- gr[[index]]
