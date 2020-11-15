@@ -7,18 +7,18 @@ Perform Tobler's pycnophylactic algorithm.
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-Given a \code{\link{SpatialPolygonsDataFrame}} and a set of populations for each polygon,
+Given a \code{\link{SpatialPolygonsDataFrame}} or an \code{\link{sf}} object and a set of populations for each polygon,
 compute a population density estimate based on Tobler's pycnophylactic interpolation
-algorithm. The result is a \code{\link{SpatialGridDataFrame}}.
+algorithm. The result is a \code{\link{SpatialGridDataFrame}} or a \code{\link{RasterLayer}}
 }
 \usage{
-pycno(x, pops, celldim, r = 0.2, converge = 3, verbose=TRUE)
+pycno(x, pops, celldim, r = 0.2, converge = 3, verbose=TRUE, sp_ras=FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
 %%     ~~Describe \code{x} here~~
-A \code{\link{SpatialPolygonsDataFrame}} representing a set of zones for which total populations are known.
+A \code{\link{SpatialPolygonsDataFrame}} or \code{\link{sf}} object representing a set of zones for which total populations are known.
 }
   \item{pops}{
 %%     ~~Describe \code{pops} here~~
@@ -26,8 +26,8 @@ A list of populations,  one for each zone represented in \code{x}.
 }
   \item{celldim}{
 %%     ~~Describe \code{celldim} here~~
-The size of the cell sides for the output SpatialGridDataFrame,  
-or a SpatialGrid or SpatialGridDataFrame with the grid topology of the desired output. 
+The size of the cell sides for the output \code{SpatialGridDataFrame}, or \code{RasterLayer}  
+or a SpatialGrid or SpatialGridDataFrame or RasterLayer with the grid topology of the desired output. 
 }
   \item{r}{
 A relaxation parameter for the iterative step in the pycnophylactic algorithm.  Prevents
@@ -42,13 +42,17 @@ A convergence parameter,  informing the decision on when iterative improvements 
 If set to \code{TRUE} (the default value) makes the function report the maximum change in any pixel value for each iterative step.  If set to \code{FALSE} the function is silent.
 %%     ~~Describe \code{converge} here~~
 }
+    \item{verbose}{
+If set to \code{TRUE} (the default value is \code{FALSE}) makes the function return a RasterLayer object even if \code{x} is an \code{sp} object.  Otherwise \code{sp} objects return \code{SpatialGridDataFrame} objects.
+%%     ~~Describe \code{converge} here~~
+}
 }
 
 \details{
 This method uses an iterative approach,  and for each iteration notes the maximum change in a pixel.  When this value falls below a certain level (actually 10^(-converge) times the largest initial pixel value) the iterations stop and the current surface is reported.  
 }
 \value{
-A \code{\link{SpatialGridDataFrame}} with each pixel set at the estimated density computed with the Pycnophylactic algorithm,  these values being stored in the data item \code{dens}. The extent of this object is set at by the bounding box of the input \code{\link{SpatialPolygonsDataFrame}}.  Pixels outside of all of the polygons are set to NA.
+A \code{\link{SpatialGridDataFrame}} or a \code{\link{RasterLayer}} with each pixel set at the estimated density computed with the Pycnophylactic algorithm,  these values being stored in the data item \code{dens}. The extent of this object is set at by the bounding box of the input \code{\link{SpatialPolygonsDataFrame}} unless a template is supplied for \code{celldim}.  Pixels outside of all of the polygons are set to NA.
 }
 \references{
 Tobler, W.R. (1979) \emph{Smooth Pycnophylactic Interpolation for Geographical Regions}. Journal of the American Statistical Association, v74(367) pp. 519-530.

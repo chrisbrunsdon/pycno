@@ -109,13 +109,28 @@
   res[is.na(res)] <- max(res,na.rm=T) + 1
   return(res)}
 
+
+.grid.matrix_sf <- function(gr,index=1) {
+  gr.dim <- dim(gr)[1:2]
+  res <- values(gr,format='matrix')
+  attr(res,'na') <- is.na(res)
+  res[is.na(res)] <- max(res,na.rm=T) + 1
+  return(res)}
+
+
+
  
 .matrix2grid <- function(gr,mat) {
   if (!is.null(attr(mat,'na'))) mat[attr(mat,'na')] <- NA
   spdf <- SpatialPixelsDataFrame(coordinates(gr),data.frame(dens=array(mat)))
   return(as(spdf,"SpatialGridDataFrame"))}
 
-pycno <- function(x,pops,celldim,r=0.2,converge=3,verbose=TRUE) {
+.matrix2grid_sf <- function(gr,mat) {
+  if (!is.null(attr(mat,'na'))) mat[attr(mat,'na')] <- NA
+  return(raster(mat,template=gr))
+}
+
+.pycno_sp <- function(x,pops,celldim,r=0.2,converge=3,verbose=TRUE) {
   gr <- .poly2grid(x,celldim)
   gm <- .grid.matrix(gr)
   pops2 <- c(pops,0)
@@ -124,6 +139,32 @@ pycno <- function(x,pops,celldim,r=0.2,converge=3,verbose=TRUE) {
   proj4string(result) <- CRS(proj4string(x))
   return(result) }
   
+.pycno_spras <- function(x,pops,celldim,r=0.2,converge=3,verbose=TRUE) {
+  result <- .pycno_sp(x,pops,celldim,r,converge,verbose)
+  result <- raster(result)
+  return(result) }
+
+.pycno_sf <- function(x,pops,celldim,r=0.2,converge=3,verbose=TRUE) {
+  gr <- .poly2grid_sf(x,celldim)
+  gm <- .grid.matrix_sf(gr)
+  pops2 <- c(pops,0)
+  pm <- .pycno.core(gm,pops2,r=r,converge=converge,verbose=verbose)
+  result <- .matrix2grid_sf(gr,pm)
+  return(result) }
+
+pycno <- function(x,pops,celldim,r=0.2,converge=3,verbose=TRUE,sp_ras=FALSE) {
+  if ("SpatialPolygonsDataFrame" %in% class(x)) {
+    if (sp_ras) {
+      res <- .pycno_spras(x,pops,celldim,r,converge,verbose)
+    } else {
+      res <- .pycno_sp(x,pops,celldim,r,converge,verbose)
+    }
+  } else {
+    res <- .pycno_sf(x,pops,celldim,r,converge,verbose)
+  }
+  return(res)
+}
+
 #=================================================================================
 #
 # Helper function to extract a matrix of pixel-wise population estimates from
